@@ -1,33 +1,40 @@
 import numpy as np
 import pandas as pd
-
+#read files
 youtube_df = pd.read_csv("youtube_analytics_2-11-24_2-9-25.csv")
 days_df = pd.read_csv("days_of_week_2-11-24_2-9-25.csv")
 
+#confirming dates
 youtube_df.set_index("Date")
 days_df.set_index("Date")
 
 # Get start and end dates from the user input
-start_date = input("Enter start date (DD-MM-YY) [Note if the month or date is single digit only enter that single digit]: ")
-end_date = input("Enter end date (DD-MM-YY) [Note if the month or date is single digit only enter that single digit]: ")
+start_date = input("Enter start date (MM/DD/YY) [Note if the month or date is single digit only enter that single digit]: ")
+end_date = input("Enter end date (MM/DD/YY) [Note if the month or date is single digit only enter that single digit]: ")
 
-df_slice = youtube_df.loc[start_date:end_date].copy()
-#print(df_slice)
+date_slice_df = youtube_df.loc[start_date:end_date]
+#currently working
+column_name = input("Please enter in one of the following column name to calculate a value for: Views\nAverage percentage viewed (%)\nUnique viewers\nSubscribers\nWatch time (hours)\nAverage view duration\nShares\nLikes\nDislikes\nComments added\nImpressions\nImpressions click-through rate (%)\n")
+column_date_slice_df = date_slice_df.loc[:, column_name]
+
 #sum, mean, standard deviation, median, smallest value, and largest value
+def calculate_sum(column_date_slice_df):
+    column_sum = column_date_slice_df.sum()
+    column_mean = column_date_slice_df.mean()  
+    column_std_dev = column_date_slice_df.std()  
+    column_median = column_date_slice_df.median() 
+    column_smallest = column_date_slice_df.min() 
+    column_largest = column_date_slice_df.max()
 
-def write_to_csv(df_slice):
-    sum_slice = df_slice.sum()      # Sum of each column
-    mean_slice = df_slice.mean()    # Mean of each column
-    std_slice = df_slice.std()      # Standard deviation of each column
-    med_slice = df_slice.median()   # Median of each column
-    min_slice = df_slice.min()      # Minimum value of each column
-    max_slice = df_slice.max()      # Maximum value of each column
-    sum_slice.to_csv("statistics.csv")
-    mean_slice.to_csv("statistics.csv")
-    std_slice.to_csv("statistics.csv")
-    med_slice.to_csv("statistics.csv")
-    min_slice.to_csv("statistics.csv")
-    max_slice.to_csv("statistics.csv")
+    statistics = pd.Series({
+    'Sum': column_sum,
+    'Mean': column_mean,
+    'StdDev': column_std_dev,
+    'Median': column_median,
+    'Smallest': column_smallest,
+    'Largest': column_largest
+})
 
+    statistics.to_csv("statistics.csv", header=False)
 
-write_to_csv(df_slice)
+calculate_sum(column_date_slice_df)
